@@ -28,8 +28,8 @@ This is an official implementation of the paper "Optical Flow Regularized Dynami
 1. [Preprocess Datasets](#processing-datasets)
 1. [Training](#training)
 1. [Testing](#testing)
-1. [Real-Time Viewer](#real-time-viewer)
-1. [Creating Your Gaussians](#create-your-new-representations-and-rendering-pipeline)
+<!-- 1. [Real-Time Viewer](#real-time-viewer)
+1. [Creating Your Gaussians](#create-your-new-representations-and-rendering-pipeline) -->
 1. [License Infomration](#license-information)
 1. [Acknowledgement](#acknowledgement)
 1. [Citations](#citations)
