@@ -217,7 +217,7 @@ python test_ours.py --quiet --eval --skip_train --valloader colmapvalid --config
 python test_ours.py --quiet --eval --valloader colmapvalid --configpath config/n3d_lite/cook_spinach.json --model_path output/dynerf/cook_spinach_lite --source_path data/dynerf/cook_spinach/colmap_0
 ```
 
-Make sure ```test_iteration = 12000``` in ```cook_spinach.json``` for testing over 12000 iterations. The testing data for DyNeRF is camera viewpoint ```cam00``` while the rest of viewpointset belongs to train data. In our case, inference over train data is done only on ```cam09```. If you want to do inference over all train/test data kindly comment out the line ```if cam.image_name == 'cam09':``` in ```test_ours.py```.
+Make sure ```test_iteration = 12000``` in .json files for testing over 12000 iterations. The testing data for DyNeRF is camera viewpoint ```cam00``` while the rest of viewpointset belongs to train data. In our case, inference over train data is done only on ```cam09```. If you want to do inference over all train/test data kindly comment out the line ```if cam.image_name == 'cam09':``` in ```test_ours.py```.
 
 <!-- - Test model on Technicolor Dataset
 ```
