@@ -86,7 +86,7 @@ Our codebase expects the following directory structure for the Neural 3D Dataset
 |---cook_spinach
 |   |---colmap_<0>
 |   |---colmap_<...>
-|   |---colmap_<299>
+|   |---colmap_<50>
 |---flame_salmon1
 
 ```
@@ -170,7 +170,7 @@ python train_ours.py --quiet --eval --config configs/n3d_lite/<scene>.json --mod
 ```
 
 You need 24GB GPU memory to train on the Neural 3D Dataset.
-In each iteration, the images selected are loaded into memory and flushed after their usage, memory still accumulates overtime.</br>
+In each iteration, the images selected are loaded into memory and flushed after their usage, but memory still accumulates overtime.</br>
 - For example, if you want to train the **lite** model on the first 50 frames of the ```cook_spinach``` scene in the Neural 3D Dataset, you can run the following command: </br>
 ```
 python train_ours.py --quiet --eval --config configs/n3d_lite/cook_spinach.json --model_path output/dynerf/cook_spinach_lite --source_path data/dynerf/cook_spinach/colmap_0 
@@ -181,7 +181,7 @@ python train_ours.py --quiet --eval --config configs/n3d_lite/cook_spinach.json 
 ```
 python train.py --quiet --eval --config configs/n3d_full/cook_spinach.json --model_path log/cook_spinach/colmap_0 --source_path <location>/cook_spinach/colmap_0 
 ``` -->
-Please refer to the .json config files for more options. We trained each model on 12000 iterations on first 50-frames of DyNeRF dataset. Make sure the resolution is 1352 x 1014. In the config files we have set ```resolution = 1``` while ```--downscale``` is set to 2 in ```script/pre_n3d.py``` for preprocessing DyNeRF data.
+Please refer to the .json config files for more options. We trained each model on 12000 iterations on first 50-frames of DyNeRF dataset. Make sure the resolution of each image in dataset is set to 1352 x 1014 before training. In the config files we set ```resolution = 1``` while ```--downscale``` is set to 2 in ```script/pre_n3d.py``` for preprocessing DyNeRF data. If you keep our settings, your images should have scale scale 1352 x 1014.
 
 <!-- 
 - If you want to train the **full** model with **distorted** immersive dataset, you can run the following command </br>
@@ -217,7 +217,7 @@ python test_ours.py --quiet --eval --skip_train --valloader colmapvalid --config
 python test_ours.py --quiet --eval --valloader colmapvalid --configpath config/n3d_lite/cook_spinach.json --model_path output/dynerf/cook_spinach_lite --source_path data/dynerf/cook_spinach/colmap_0
 ```
 
-Make sure test_iteration = 12000 in cook_spinach.json for testing over 12000 iterations. The testing data for DyNeRF is camera viewpoint cam00 while the rest of viewpointset belongs to train data. In our case, inference over train data is done only on cam09. If you want to do inference over all train/test data kindly comment out the line ```if cam.image_name == 'cam09':``` in ```test_ours.py```
+Make sure ```test_iteration = 12000``` in ```cook_spinach.json``` for testing over 12000 iterations. The testing data for DyNeRF is camera viewpoint ```cam00``` while the rest of viewpointset belongs to train data. In our case, inference over train data is done only on ```cam09```. If you want to do inference over all train/test data kindly comment out the line ```if cam.image_name == 'cam09':``` in ```test_ours.py```.
 
 <!-- - Test model on Technicolor Dataset
 ```
