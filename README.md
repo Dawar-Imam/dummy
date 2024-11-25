@@ -48,7 +48,7 @@ cd SpacetimeGaussians
 ```
 
 Then run the following command to install the environments with conda.
-Note we will create two environments, one for preprocessing with colmap (```colmapenv```) and one for training and testing (```feature_splatting```). Training, testing and preprocessing have been tested on Ubuntu 20.04. </br>
+Note we will create two environments, one for preprocessing with colmap (```colmapenv```) and one for training and testing (```feature_splatting```). Training, testing and preprocessing have been tested on Ubuntu 22.04. </br>
 ```
 bash script/setup.sh
 ```
@@ -166,25 +166,24 @@ You can train our model by running the following command: </br>
 
 ```
 conda activate feature_splatting
-python train.py --quiet --eval --config config/<dataset>_<lite|full>/<scene>.json --model_path <path to save model> --source_path <location>/<scene>/colmap_0
-```
-In the argument to ```--config```, ```<dataset>``` can be ```n3d``` (for Neural 3D Dataset) or ```techni``` (for Technicolor Dataset), and you can choose between ```full``` model or ```lite``` model. </br>
-You need 24GB GPU memory to train on the Neural 3D Dataset. </br>
-You need 48GB GPU memory to train on the Technicolor Dataset. </br>
-The large memory requirement is because training images are loaded into GPU memory. </br>
-- For example, if you want to train the **lite** model on the first 50 frames of the ```cook_spinach``` scene in the Neural 3D Dataset, you can run the following command </br>
-```
-python train.py --quiet --eval --config configs/n3d_lite/cook_spinach.json --model_path log/cook_spinach_lite --source_path <location>/cook_spinach/colmap_0 
+python train_ours.py --quiet --eval --config configs/n3d_lite/<scene>.json --model_path <path to save model> --source_path data/dynerf/<scene>/colmap_0
 ```
 
-- If you want to train the **full** model, you can run the following command </br>
+You need 24GB GPU memory to train on the Neural 3D Dataset.
+In each iteration, the images selected are loaded into memory and flushed after their usage, memory still accumulates overtime.</br>
+- For example, if you want to train the **lite** model on the first 50 frames of the ```cook_spinach``` scene in the Neural 3D Dataset, you can run the following command: </br>
+```
+python train_ours.py --quiet --eval --config configs/n3d_lite/cook_spinach.json --model_path output/dynerf/cook_spinach_lite --source_path data/dynerf/cook_spinach/colmap_0 
+```
+
+<!-- - If you want to train the **full** model, you can run the following command </br>
 
 ```
 python train.py --quiet --eval --config configs/n3d_full/cook_spinach.json --model_path log/cook_spinach/colmap_0 --source_path <location>/cook_spinach/colmap_0 
-```
-Please refer to the .json config files for more options.
+``` -->
+Please refer to the .json config files for more options. We trained each model on 12000 iterations on first 50-frames of DyNeRF dataset. Make sure the resolution is 1352 x 1014. In the config files we have set ```resolution = 1``` while ```--downscale``` is set to 2 in ```script/pre_n3d.py``` for preprocessing DyNeRF data.
 
-
+<!-- 
 - If you want to train the **full** model with **distorted** immersive dataset, you can run the following command </br>
 
 ```
@@ -202,7 +201,7 @@ Note, we remove the ```--eval``` to reuse the loader of technicolor and also to 
 python train.py --quiet --maskgt 1 --config configs/im_undistort_lite/02_Flames.json --model_path log/02_Flames/colmap_0 --source_path <location>/02_Flames_undist/colmap_0 
 ```
 
-Please refer to the .json config files for more options.
+Please refer to the .json config files for more options. -->
 
 
 ## Testing
@@ -210,10 +209,17 @@ Please refer to the .json config files for more options.
 - Test model on Neural 3D Dataset
 
 ```
-python test.py --quiet --eval --skip_train --valloader colmapvalid --configpath config/n3d_<lite|full>/<scene>.json --model_path <path to model> --source_path <location>/<scene>/colmap_0
+python test_ours.py --quiet --eval --skip_train --valloader colmapvalid --configpath config/n3d_lite/<scene>.json --model_path <path to model> --source_path data/dynerf/<scene>/colmap_0
 ```
 
-- Test model on Technicolor Dataset
+- For testing ```cook_spinach``` scene of DyNeRF dataset on both train and test data, please use the following command:
+```
+python test_ours.py --quiet --eval --valloader colmapvalid --configpath config/n3d_lite/cook_spinach.json --model_path output/dynerf/cook_spinach_lite --source_path data/dynerf/cook_spinach/colmap_0
+```
+
+Make sure test_iteration = 12000 in cook_spinach.json for testing over 12000 iterations. The testing data for DyNeRF is camera viewpoint cam00 while the rest of viewpointset belongs to train data. In our case, inference over train data is done only on cam09. If you want to do inference over all train/test data kindly comment out the line ```if cam.image_name == 'cam09':``` in ```test_ours.py```
+
+<!-- - Test model on Technicolor Dataset
 ```
 python test.py --quiet --eval --skip_train --valloader technicolorvalid --configpath config/techni_<lite|full>/<scene>.json --model_path <path to model> --source_path <location>/<scenename>/colmap_0
 ```
@@ -226,10 +232,10 @@ pip install thirdparty/gaussian_splatting/submodules/forward_full
 
 ```
 PYTHONDONTWRITEBYTECODE=1 CUDA_VISIBLE_DEVICES=0 python test.py --quiet --eval --skip_train --valloader immersivevalidss --configpath config/im_distort_<lite|full>/<scene>.json --model_path <path to model> --source_path <location>/<scenename>/colmap_0
-```
+``` -->
 
 
-## Real-Time Viewer 
+<!-- ## Real-Time Viewer 
 The viewer is based on [SIBR](https://sibr.gitlabpages.inria.fr/) and [Gaussian Splatting](https://github.com/graphdeco-inria/gaussian-splatting). 
 ### Pre-built Windows Binary
 Download the viewer binary from [this link](https://huggingface.co/stack93/spacetimegaussians/tree/main) and unzip it. The binary works for Windows with CUDA >= 11.0.
@@ -256,7 +262,7 @@ If you want to customize our codebase for your own models, you can refer to the 
 - Step 1: Create a new Gaussian representation in this [folder](./thirdparty/gaussian_splatting/scene/). You can use ```oursfull.py``` or ```ourslite.py``` as a template. </br>
 - Step 2: Create a new rendering pipeline in this [file](./thirdparty/gaussian_splatting/renderer/__init__.py). You can use the ```train_ours_full``` function as a template. </br>
 - Step 3 (For new dataset, optional): Create a new dataloader in this [file](./thirdparty/gaussian_splatting/scene/__init__.py) and this [file](./thirdparty/gaussian_splatting/scene/dataset_readers.py). </br>
-- Step 4: Update the intermidiate API in ```getmodel``` (for Step 1) and ```getrenderpip``` (for Step 2) functions in ```helper_train.py```.</br>
+- Step 4: Update the intermidiate API in ```getmodel``` (for Step 1) and ```getrenderpip``` (for Step 2) functions in ```helper_train.py```.</br> -->
 
 
 ## License Information
@@ -280,7 +286,7 @@ We also want to thank MrNeRF for [posts](https://x.com/janusch_patas/status/1740
 
 
 ## Citations
-Please cite our paper if you find it useful for your research.
+<!-- Please cite our paper if you find it useful for your research.
 ```
 @InProceedings{Li_STG_2024_CVPR,
     author    = {Li, Zhan and Chen, Zhang and Li, Zhong and Xu, Yi},
@@ -304,4 +310,4 @@ Please also cite the following paper if you use Gaussian Splatting.
       year         = {2023},
       url          = {https://repo-sam.inria.fr/fungraph/3d-gaussian-splatting/}
 }
-```
+``` -->
