@@ -54,7 +54,7 @@ source script/setup.sh
 Note that you may need to manually install the following packages if you encounter errors during the installation of the above command. </br>
 
 ```
-conda activate feature_splatting
+conda activate flowreg_dgs
 <!-- pip install thirdparty/gaussian_splatting/submodules/gaussian_rasterization_ch9 -->
 pip install thirdparty/gaussian_splatting/submodules/gaussian_rasterization_ch3
 pip install thirdparty/gaussian_splatting/submodules/forward_lite
@@ -74,11 +74,11 @@ python script/pre_n3d.py --videopath <location>/<scene>
 
 - For example if you put the dataset at ```/data/dynerf```, and want to preprocess the ```cook_spinach``` scene, you can run the following command
 ```
-conda activate colmapenv
-python script/pre_n3d.py --videopath /home/Neural3D/cook_spinach/
+conda activate colmap_env
+python script/pre_n3d.py --videopath /data/dynerf/cook_spinach/
 ```
 
-Our codebase expects the following directory structure for the Neural 3D Dataset after preprocessing:
+Our codebase expects the following directory structure for the Neural 3D (DyNeRF) Dataset after preprocessing:
 ```
 
 <location>
@@ -164,12 +164,12 @@ copy ```configs/im_view/09_Alexa/pickview.pkl``` to ```<location>/09_Alexa_dist/
 You can train our model by running the following command: </br>
 
 ```
-conda activate feature_splatting
+conda activate flowreg_dgs
 python train_ours.py --quiet --eval --config configs/n3d_lite/<scene>.json --model_path <path to save model> --source_path data/dynerf/<scene>/colmap_0
 ```
 
 You need 24GB GPU memory to train on the Neural 3D Dataset.
-In each iteration, the images selected are loaded into memory and flushed after their usage, but memory still accumulates overtime.</br>
+In each iteration, the images selected are loaded into memory and flushed after their usage, although memory still accumulates overtime.</br>
 - For example, if you want to train the **lite** model on the first 50 frames of the ```cook_spinach``` scene in the Neural 3D Dataset, you can run the following command: </br>
 ```
 python train_ours.py --quiet --eval --config configs/n3d_lite/cook_spinach.json --model_path output/dynerf/cook_spinach_lite --source_path data/dynerf/cook_spinach/colmap_0 
@@ -208,12 +208,12 @@ Please refer to the .json config files for more options. -->
 - Test model on Neural 3D Dataset
 
 ```
-python test_ours.py --quiet --eval --skip_train --valloader colmapvalid --configpath config/n3d_lite/<scene>.json --model_path <path to model> --source_path data/dynerf/<scene>/colmap_0
+python test_ours.py --quiet --eval --skip_train --valloader colmapvalid --configpath configs/n3d_lite/<scene>.json --model_path <path to model> --source_path data/dynerf/<scene>/colmap_0
 ```
 
 - For testing ```cook_spinach``` scene of DyNeRF dataset on both train and test data, please use the following command:
 ```
-python test_ours.py --quiet --eval --valloader colmapvalid --configpath config/n3d_lite/cook_spinach.json --model_path output/dynerf/cook_spinach_lite --source_path data/dynerf/cook_spinach/colmap_0
+python test_ours.py --quiet --eval --valloader colmapvalid --configpath configs/n3d_lite/cook_spinach.json --model_path output/dynerf/cook_spinach_lite --source_path data/dynerf/cook_spinach/colmap_0
 ```
 
 Make sure ```test_iteration = 12000``` in .json files for testing over 12000 iterations. The testing data for DyNeRF is camera viewpoint ```cam00``` while the rest of viewpointset belongs to train data. In our case, inference over train data is done only on ```cam09```. If you want to do inference over all train/test data kindly comment out the line ```if cam.image_name == 'cam09':``` in ```test_ours.py```.
