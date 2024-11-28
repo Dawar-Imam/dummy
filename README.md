@@ -46,32 +46,33 @@ cd SpacetimeGaussians
 ```
 
 Then run the following command to install the environments with conda.
-Note we will create two environments, one for preprocessing with colmap (```colmapenv```) and one for training and testing (```feature_splatting```). Training, testing and preprocessing have been tested on Ubuntu 22.04. </br>
+Note we will create two environments, one for preprocessing with colmap (```colmap_env```) and one for training and testing (```flowreg_dgs```). Training, testing and preprocessing have been tested on Ubuntu 22.04. </br>
+Run the following command to set up the ```flowreg_dgs``` environment. 
 ```
-bash script/setup.sh
+source script/setup.sh
 ```
 Note that you may need to manually install the following packages if you encounter errors during the installation of the above command. </br>
 
 ```
 conda activate feature_splatting
-pip install thirdparty/gaussian_splatting/submodules/gaussian_rasterization_ch9
+<!-- pip install thirdparty/gaussian_splatting/submodules/gaussian_rasterization_ch9 -->
 pip install thirdparty/gaussian_splatting/submodules/gaussian_rasterization_ch3
 pip install thirdparty/gaussian_splatting/submodules/forward_lite
-pip install thirdparty/gaussian_splatting/submodules/forward_full
+<!-- pip install thirdparty/gaussian_splatting/submodules/forward_full -->
 ```
 
 ## Processing Datasets
-Note, our paper uses the sparse points that follow 3DGS. Our per frame SfM points only use ```point_triangulator``` in Colmap instead of dense points.  
+Note, the baseline paper uses the sparse points that follow 3DGS. It's per frame SfM points only use ```point_triangulator``` in Colmap instead of dense points.  
 ### Neural 3D Dataset
 Download the dataset from [here](https://github.com/facebookresearch/Neural_3D_Video.git).
 After downloading the dataset, you can run the following command to preprocess the dataset. </br>
 ```
-conda activate colmapenv
+conda activate colmap_env
 python script/pre_n3d.py --videopath <location>/<scene>
 ```
 ```<location>``` is the path to the dataset root folder, and ```<scene>``` is the name of a scene in the dataset. </br>
 
-- For example if you put the dataset at ```/home/Neural3D```, and want to preprocess the ```cook_spinach``` scene, you can run the following command
+- For example if you put the dataset at ```/data/dynerf```, and want to preprocess the ```cook_spinach``` scene, you can run the following command
 ```
 conda activate colmapenv
 python script/pre_n3d.py --videopath /home/Neural3D/cook_spinach/
