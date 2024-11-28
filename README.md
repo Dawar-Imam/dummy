@@ -55,10 +55,8 @@ Note that you may need to manually install the following packages if you encount
 
 ```
 conda activate flowreg_dgs
-<!-- pip install thirdparty/gaussian_splatting/submodules/gaussian_rasterization_ch9 -->
 pip install thirdparty/gaussian_splatting/submodules/gaussian_rasterization_ch3
 pip install thirdparty/gaussian_splatting/submodules/forward_lite
-<!-- pip install thirdparty/gaussian_splatting/submodules/forward_full -->
 ```
 
 ## Processing Datasets
